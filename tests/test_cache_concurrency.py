@@ -49,7 +49,7 @@ def test_lru_thread_safety():
         t.join()
     
     # Verify no errors occurred
-    assert not errors, f"Thread safety violations:\n" + "\n".join(errors)
+    assert not errors, "Thread safety violations:\n" + "\n".join(errors)
 
 
 def test_lru_concurrent_len():
@@ -113,4 +113,4 @@ def test_lru_eviction_race():
         t.join()
     
     # Should complete without crashes or data corruption
-    assert not errors, f"Eviction race condition:\n" + "\n".join(errors)
+    assert not errors, "Eviction race condition:\n" + "\n".join(errors)
