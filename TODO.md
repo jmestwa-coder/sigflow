@@ -1,0 +1,5 @@
+- [ ] Create branch blackboxai/tlv-truncated-diagnostic
+- [ ] Implement fix in sigflow/parsers/tlv.py: warn+break when declared TLV value is truncated (offset+length > len(data))
+- [ ] Add unit test in tests/test_parsers.py for TLV truncated value producing tlv-truncated diagnostic and no ParseError
+- [ ] Run pytest
+- [ ] Commit and open PR on GitHub
