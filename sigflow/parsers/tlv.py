@@ -13,10 +13,14 @@ class TLVParser(BaseParser):
         frames = []
         offset = 0
         seq = 0
+
         while offset < len(data):
-            # Need at least the TLV header (tag + length)
             if len(data) - offset < TLV.size:
                 context.warn("tlv-truncated", "partial tlv header", offset)
+                break
+
+            if len(frames) >= self.max_frames:
+                context.warn("frame-limit", "frame limit reached", offset)
                 break
 
             tag, length = TLV.unpack_from(data, offset)
@@ -26,15 +30,14 @@ class TLVParser(BaseParser):
                 context.warn("tlv-large", f"tag {tag} exceeds max payload", offset)
                 break
 
-            # If the TLV header is present, but the declared value bytes are truncated,
-            # downgrade to a recoverable diagnostic (consistent with BinaryFrameParser).
             if offset + length > len(data):
                 context.warn("tlv-truncated", "truncated tlv value", offset)
                 break
 
             value = self.require(data, offset, length)
             frames.append(Frame(tag, seq, value, metadata={"tag": tag}))
+
             seq += 1
             offset += length
-        return frames
 
+        return frames

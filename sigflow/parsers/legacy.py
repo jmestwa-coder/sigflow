@@ -14,16 +14,28 @@ class LegacyParser(BaseParser):
         frames = []
         offset = 0
         seq = 0
+
         while offset + LEGACY.size <= len(data):
+            if len(frames) >= self.max_frames:
+                context.warn("frame-limit", "frame limit reached", offset)
+                break
+
             stream_id, length = LEGACY.unpack_from(data, offset)
             offset += LEGACY.size
+
             if length > self.max_payload:
                 context.warn("legacy-large", "legacy payload exceeded limit", offset)
                 break
+
             payload = self.require(data, offset, length)
-            frames.append(Frame(stream_id, seq, payload, version=0, offset=offset))
+            frames.append(
+                Frame(stream_id, seq, payload, version=0, offset=offset)
+            )
+
             offset += length
             seq += 1
+
         if offset != len(data):
             context.warn("legacy-tail", "ignored trailing legacy bytes", offset)
+
         return frames
